@@ -1,7 +1,21 @@
 import os
+import codecs
+
 files = [f for f in os.listdir('.') if os.path.isfile(f)]
 files.sort()
 missingTotal = 0
+
+print("Do you have an exported list? (Y/N)")
+exported = input().lower() == "y"
+
+if exported:
+    print("Please input file name of the exported list")
+    listName = input()
+    if os.path.isfile(listName):
+        exportedList = codecs.open(listName, "r", encoding="utf8")     
+    else:
+        print("The file could not be found, please try again")
+        exit()
 
 print("How many digits is your index?")
 indexSize = int(input())
@@ -25,15 +39,45 @@ if save and os.path.exists("missing.txt"):
 print()
 
 if save:
-    resultTextFile = open("missing.txt","a")
+    resultTextFile = codecs.open("missing.txt", "a", encoding="utf8")
+    
+for f in files:
+    if f[indexSize + 1] == "5": # for skipping manually downloaded replacements with XX.5 naming scheme
+        continue
+    try:    
+        currentIndex = f[:indexSize]
+        if counter != int(currentIndex):
+            missingTotal += 1
 
-    for f in files:
-        if f[indexSize + 1] == "5": # for skipping manually downloaded replacements with XX.5 naming scheme
-            continue
-        try:    
-            currentIndex = f[:indexSize]
-            if counter != int(currentIndex):
-                missingTotal += 1
+            if exported:
+                for line in exportedList:   
+                    if counter > int(totalNo) - startIndex + 1:
+                        break
+                    line = line.strip()
+                    if line == str(counter) or line == "0" + str(counter) or line == "00" + str(counter):
+                        resultLine = (str(counter) + ". " + next(exportedList).strip() + " is missing")
+                        print(resultLine)
+                        if save:
+                            resultTextFile.write(resultLine + "\n")
+                        break   
+                
+                counter += 1
+    
+                while counter < int(currentIndex) + 1:
+                    if counter != int(currentIndex):
+                        missingTotal += 1
+                        for innerLine in exportedList:  
+                            if counter > int(totalNo) - startIndex + 1:
+                                break
+                            innerLine = innerLine.strip()
+                            if innerLine == str(counter) or innerLine == "0" + str(counter) or innerLine == "00" + str(counter):
+                                innerResultline = innerLine + ". " + next(exportedList).strip() + " is missing"
+                                print(innerResultline)
+                                if save:
+                                    resultTextFile.write(innerResultline + "\n")       
+                                break                            
+                    counter += 1
+            else:
                 resultLine = str(counter) + " is missing"
                 print(resultLine)        
                 if save:
@@ -48,68 +92,50 @@ if save:
                         if save:
                             resultTextFile.write(resultLine + "\n")                        
                     counter += 1
-            else:
-                counter += 1                
-        except:
-            pass
+        else:
+            counter += 1                
+    except:
+        pass
+
+counter += 1
+
+for counter in range(counter, int(totalNo) + 1):
+    if exported:
+        for line in exportedList:  
+            if counter > int(totalNo) - startIndex + 1:
+                break    
+            line = line.strip()
+            if line == str(counter) or line == "0" + str(counter) or line == "00" + str(counter):
+                resultLine = str(counter) + ". " + next(exportedList).strip() + " is missing"
+                print(resultLine)
+                if save:
+                    resultTextFile.write(resultLine + "\n")
+                break
+        missingTotal += 1
+    else:
+        for counter in range(counter, int(totalNo) + 1):
+            resultLine = str(counter) + " is missing"
+            print(resultLine)
+            missingTotal += 1
+            if save:
+                resultTextFile.write(resultLine + "\n")
+            counter += 1
     
     counter += 1
-    
-    for counter in range(counter, int(totalNo) + 1):
-        resultLine = str(counter) + " is missing"
-        print(resultLine)
-        missingTotal += 1
-        if save:
-            resultTextFile.write(resultLine + "\n")
-        counter += 1
-    
-    resultLine = "Total missing: " + str(missingTotal)
-    print(resultLine)
+
+resultLine = "Total missing: " + str(missingTotal)
+print(resultLine)
+if save:
     resultTextFile.write(resultLine + "\n")
-    
-    properTotal = int(totalNo) - startIndex + 1
-    actualTotal = int(totalNo) - startIndex - missingTotal + 1
-    resultLine = "You have " + str(actualTotal) + "/" + str(properTotal) + " videos"
-    print(resultLine)    
-    
+
+properTotal = int(totalNo) - startIndex + 1
+actualTotal = int(totalNo) - startIndex - missingTotal + 1
+resultLine = "You have " + str(actualTotal) + "/" + str(properTotal) + " videos"
+print(resultLine)    
+
+if save:
     resultTextFile.write(resultLine)
     resultTextFile.close()
-else:
-    for f in files:
-        if f[indexSize + 1] == "5": # for skipping manually downloaded replacements with XX.5 naming scheme
-            continue
-        try:    
-            currentIndex = f[:indexSize]
-            if counter != int(currentIndex):
-                missingTotal += 1
-                resultLine = str(counter) + " is missing"
-                print(resultLine)        
-                counter += 1
-    
-                while counter < int(currentIndex) + 1:
-                    if counter != int(currentIndex):
-                        missingTotal += 1
-                        resultLine = str(counter) + " is missing"
 
-                        print(resultLine)        
-                        if save:
-                            resultTextFile.write(resultLine + "\n")                        
-                    counter += 1
-            else:
-                counter += 1                
-        except:
-            pass
-    
-    counter += 1
-    
-    for counter in range(counter, int(totalNo) + 1):
-        resultLine = str(counter) + " is missing"
-        print(resultLine)
-        missingTotal += 1
-        counter += 1
-    
-    print("Total missing: " + str(missingTotal))
-    
-    properTotal = int(totalNo) - startIndex + 1
-    actualTotal = int(totalNo) - startIndex - missingTotal + 1
-    print("You have " + str(actualTotal) + "/" + str(properTotal) + " videos")   
+if exported:
+    exportedList.close()
