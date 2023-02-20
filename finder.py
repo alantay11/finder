@@ -42,10 +42,11 @@ if save:
     resultTextFile = codecs.open("missing.txt", "a", encoding="utf8")
     
 for f in files:
-    if f[indexSize + 1] == "5": # for skipping manually downloaded replacements with XX.5 naming scheme
+    if f[indexSize + 1] == "5" or f[indexSize] != ".": # for skipping manually downloaded replacements with XX.5 naming scheme and other files
         continue
     try:    
         currentIndex = f[:indexSize]
+        #print("zero counter: "+ str(counter) + " currentIndex: " + currentIndex + " file: " + f)
         if counter != int(currentIndex):
             missingTotal += 1
 
@@ -55,6 +56,7 @@ for f in files:
                         break
                     line = line.strip()
                     if line == str(counter) or line == "0" + str(counter) or line == "00" + str(counter):
+                        #print("firstR counter: " + str(counter) + " line: " + line + " currentIndex: " + currentIndex)
                         resultLine = (str(counter) + ". " + next(exportedList).strip() + " is missing")
                         print(resultLine)
                         if save:
@@ -71,6 +73,7 @@ for f in files:
                                 break
                             innerLine = innerLine.strip()
                             if innerLine == str(counter) or innerLine == "0" + str(counter) or innerLine == "00" + str(counter):
+                                #print("secondR counter: " + str(counter) + " line: " + innerLine)
                                 innerResultline = innerLine + ". " + next(exportedList).strip() + " is missing"
                                 print(innerResultline)
                                 if save:
@@ -106,6 +109,7 @@ for counter in range(counter, int(totalNo) + 1):
                 break    
             line = line.strip()
             if line == str(counter) or line == "0" + str(counter) or line == "00" + str(counter):
+                #print("thirdR counter: " + str(counter) + " line: " + line)
                 resultLine = str(counter) + ". " + next(exportedList).strip() + " is missing"
                 print(resultLine)
                 if save:
