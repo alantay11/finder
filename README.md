@@ -6,6 +6,7 @@ Videos must be named in `playlist_index. title` format.
 
 Example:
 `yt-dlp.exe -o "%(playlist_index)03d. %(title)s [%(id)s].%(ext)s"`
+`yt-dlp.exe --download-archive archive.txt --playlist-reverse -o "%(playlist_autonumber)03d. %(title)s [%(id)s].%(ext)s"`
 
 &nbsp;  
 Outputting names of videos based on an text file is also possible if exported in this format:
