@@ -4,8 +4,10 @@ Python script to find missing indexes within a given range for use with yt-dlp t
 &nbsp;  
 Videos must be named in `playlist_index. title` format.
 
-Example:
+Examples:
+
 `yt-dlp.exe -o "%(playlist_index)03d. %(title)s [%(id)s].%(ext)s"`
+
 `yt-dlp.exe --download-archive archive.txt --playlist-reverse -o "%(playlist_autonumber)03d. %(title)s [%(id)s].%(ext)s"`
 
 &nbsp;  
